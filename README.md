@@ -7,10 +7,14 @@ This python script examines pixels on your main screen and sets your #2 Phillips
 
 This is intended to provide a an experience similar to the amBX lighting system: http://www.ambx.com/
 
+Requirements:
+* Uses PIL to grab your screen
+
 Limitations:
 * Might only work with windowed/fullscreen windowed programs?
-* Doesn't seem to take brightness into account
-* Hardcoded to use light #2
 
 Usage:
-* python gamehue.py
+* python gamehue.py <hubIP> <lightID>
+
+Credit:
+* Thanks to studioimaginaire; I use their Python interface for the Hue hub.
