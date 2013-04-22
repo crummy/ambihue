@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""Regularly sets a Phillips Hue light to the average screen colour"""
+""" Ambient Hue Lighting Controller
+    Regularly sets a Phillips Hue light to the average screen colour
+"""
 import time
 import sys
 from phue import Bridge
@@ -13,6 +15,9 @@ __status__ = "Proof of concept"
 
 
 def getAverageScreenColor():
+    """ Examines 1/64th the pixels on the screen, calculates the average colour, and returns
+        the average in the form of three floats.
+    """
     screen = ImageGrab.grab()
     left, top, width, height = screen.getbbox()
     red, green, blue = 0.0, 0.0, 0.0
@@ -29,9 +34,12 @@ def getAverageScreenColor():
     return red, green, blue
 
 
-# From:
-#https://github.com/PhilipsHue/PhilipsHueSDKiOS/blob/master/ApplicationDesignNotes/RGB%20to%20xy%20Color%20conversion.md
 def rgbToXy(r, g, b):
+    """ Calculates the XY values (in the Hue's colourspace) from given RGB values.
+        Uses formula from https://github.com/PhilipsHue/PhilipsHueSDKiOS/blob/master/ApplicationDesignNotes/
+                                                                        RGB%20to%20xy%20Color%20conversion.md
+        Returns two floats; the X and Y values of the colour.
+    """
     r = pow((r + 0.055) / (1.0 + 0.055), 2.4) if r > 0.04045 else r / 12.92
     g = pow((g + 0.055) / (1.0 + 0.055), 2.4) if g > 0.04045 else g / 12.92
     b = pow((b + 0.055) / (1.0 + 0.055), 2.4) if b > 0.04045 else b / 12.92
@@ -45,6 +53,8 @@ def rgbToXy(r, g, b):
 
 
 def turnLightToColor(bridge, id, red, green, blue):
+    """ Given a bridge, light ID, and colour, sets the given light to the colour specified.
+    """
     #print "red: %s, green: %s, blue: %s" % (red, green, blue)
     x, y = rgbToXy(red/255, green/255, blue/255)
     bri = int((red + green + blue)/3)
@@ -53,7 +63,7 @@ def turnLightToColor(bridge, id, red, green, blue):
 
 
 if len(sys.argv) < 2:
-    print "Game Hue needs a better name, by Malcolm Crum"
+    print "Ambient Hue Lighting Controller, by Malcolm Crum"
     print "Usage: python huegame.py <huehubIP> <lightID>"
 else:
     hueIP = sys.argv[1]
