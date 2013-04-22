@@ -1,8 +1,15 @@
-__author__ = 'Malcolm'
+#!/usr/bin/env python
+"""Regularly sets a Phillips Hue light to the average screen colour"""
 import time
 import sys
 from phue import Bridge
 from PIL import ImageGrab
+
+__author__ = "Malcolm Crum"
+__license__ = "WTFPL"
+__version__ = "0.1"
+__email__ = "crummynz@gmail.com"
+__status__ = "Proof of concept"
 
 
 def getAverageScreenColor():
@@ -33,29 +40,30 @@ def rgbToXy(r, g, b):
     Z = r * 0.000000 + g * 0.053077 + b * 1.035763
     x = X / (X + Y + Z)
     y = Y / (X + Y + Z)
-    print "rgb returns x: %s and y: %s" % (x, y)
+    #print "rgb returns x: %s and y: %s" % (x, y)
     return x, y
 
 
-def turnLightToColor(bridge, light, red, green, blue):
-    print "red: %s, green: %s, blue: %s" % (red, green, blue)
+def turnLightToColor(bridge, id, red, green, blue):
+    #print "red: %s, green: %s, blue: %s" % (red, green, blue)
     x, y = rgbToXy(red/255, green/255, blue/255)
-    #x = int(x * 360*182)
-    #y = int(y * 255)
-    light = bridge.get_light_objects('id')
-    light[2].xy = (x, y)
+    bri = int((red + green + blue)/3)
+    command = {'transitiontime': 3, 'on': True, 'bri': bri, 'xy': (x, y)}
+    bridge.set_light(id, command)
+
 
 if len(sys.argv) < 2:
     print "Game Hue needs a better name, by Malcolm Crum"
-    print "Usage: python huegame.py <huehubIP>"
+    print "Usage: python huegame.py <huehubIP> <lightID>"
 else:
     hueIP = sys.argv[1]
+    light = sys.argv[2]
     bridge = Bridge(hueIP)
     start_time = time.time()
-    interval = 0.5
+    interval = 0.2  # How many seconds to wait between screen refreshes
     i = 0
     while True:
         time.sleep(start_time + i * interval - time.time())
         i += 1
         r, g, b = getAverageScreenColor()
-        turnLightToColor(bridge, 2, r, g, b)
+        turnLightToColor(bridge, int(light), r, g, b)
