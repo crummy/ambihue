@@ -28,9 +28,12 @@ def getAverageScreenColor():
             green += color[1]
             blue += color[2]
     total = y/8 * x/8
-    red /= total
-    blue /= total
-    green /= total
+    if red != 0:
+        red /= total
+    if blue != 0:
+        blue /= total
+    if green != 0:
+        green /= total
     return red, green, blue
 
 
