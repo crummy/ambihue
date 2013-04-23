@@ -58,22 +58,23 @@ def turnLightToColor(bridge, id, red, green, blue):
     #print "red: %s, green: %s, blue: %s" % (red, green, blue)
     x, y = rgbToXy(red/255, green/255, blue/255)
     bri = int((red + green + blue)/3)
-    command = {'transitiontime': 3, 'on': True, 'bri': bri, 'xy': (x, y)}
+    command = {'transitiontime': 4, 'on': True, 'bri': bri, 'xy': (x, y)}
     bridge.set_light(id, command)
 
 
-if len(sys.argv) < 2:
-    print "Ambient Hue Lighting Controller, by Malcolm Crum"
-    print "Usage: python huegame.py <huehubIP> <lightID>"
-else:
-    hueIP = sys.argv[1]
-    light = sys.argv[2]
-    bridge = Bridge(hueIP)
-    start_time = time.time()
-    interval = 0.2  # How many seconds to wait between screen refreshes
-    i = 0
-    while True:
-        time.sleep(start_time + i * interval - time.time())
-        i += 1
-        r, g, b = getAverageScreenColor()
-        turnLightToColor(bridge, int(light), r, g, b)
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print "Ambient Hue Lighting Controller, by Malcolm Crum"
+        print "Usage: python ambihue.py <huehubIP> <lightID>"
+    else:
+        hueIP = sys.argv[1]
+        light = sys.argv[2]
+        bridge = Bridge(hueIP)
+        start_time = time.time()
+        interval = 0.5  # How many seconds to wait between screen refreshes
+        i = 0
+        while True:
+            time.sleep(start_time + i * interval - time.time())
+            i += 1
+            r, g, b = getAverageScreenColor()
+            turnLightToColor(bridge, int(light), r, g, b)
