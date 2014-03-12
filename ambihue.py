@@ -6,6 +6,7 @@ import time
 import sys
 from phue import Bridge
 from PIL import ImageGrab
+import logging
 
 __author__ = "Malcolm Crum"
 __license__ = "WTFPL"
@@ -66,6 +67,7 @@ def turnLightToColor(bridge, id, red, green, blue):
 
 
 if __name__ == '__main__':
+    log = logging.getLogger()
     if len(sys.argv) < 2:
         print "Ambient Hue Lighting Controller, by Malcolm Crum"
         print "Usage: python ambihue.py <huehubIP> <lightID>"
@@ -79,5 +81,11 @@ if __name__ == '__main__':
         while True:
             time.sleep(start_time + i * interval - time.time())
             i += 1
-            r, g, b = getAverageScreenColor()
+            try:
+                r, g, b = getAverageScreenColor()
+            except TypeError as exc:
+                # Ocasionally get NoneType fatal errors, this makes them
+                # warnings instead
+                log.warning(exc.message)
+            log.debug('color: red:%s green:%s blue:%s' % (r,g,b))
             turnLightToColor(bridge, int(light), r, g, b)
